@@ -98,7 +98,6 @@ func (sc *ServerSSHConnection) HandleX11Proxy(clientSess ssh.Session) (err error
 	}
 	sess := sc.session
 	// 请求远端开启 X11 转发
-	logger.Infof("Payload: ", clientSess.X11ReqPayload())
 	ok, err := sess.SendRequest("x11-req", true, clientSess.X11ReqPayload())
 	if err == nil && !ok {
 		err = errors.New("ssh: x11-req failed")
