@@ -112,6 +112,10 @@ func (w *WrapperSession) Pty() ssh.Pty {
 	return pty
 }
 
+func (w *WrapperSession) SshSession() ssh.Session {
+	return w.Sess
+}
+
 func (w *WrapperSession) ID() string {
 	return w.Uuid
 }

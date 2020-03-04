@@ -13,4 +13,5 @@ type UserConnection interface {
 	LoginFrom() string
 	RemoteAddr() string
 	Pty() ssh.Pty
+	SshSession() ssh.Session
 }

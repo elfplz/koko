@@ -13,6 +13,7 @@ require (
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/creack/pty v1.1.9
 	github.com/elastic/go-elasticsearch/v6 v6.8.5
+	github.com/elfplz/ssh v0.1.6 // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/gliderlabs/ssh v0.2.3-0.20190711180243-866d0ddf7991
 	github.com/gorilla/mux v1.7.2
@@ -40,7 +41,7 @@ require (
 )
 
 replace (
-	github.com/gliderlabs/ssh v0.2.3-0.20190711180243-866d0ddf7991 => github.com/ibuler/ssh v0.1.6-0.20191022095544-d805cc9f27a8
+	github.com/gliderlabs/ssh v0.2.3-0.20190711180243-866d0ddf7991 => github.com/elfplz/ssh v0.1.7-0.20200304062033-202b91a89ab7
 	github.com/pkg/sftp v1.10.0 => github.com/LeeEirc/sftp v1.10.2
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586 => github.com/ibuler/crypto v0.0.0-20190715092645-911d13b3bf6e
 )

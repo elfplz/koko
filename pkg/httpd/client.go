@@ -58,6 +58,10 @@ func (c *Client) Pty() ssh.Pty {
 	return c.pty
 }
 
+func (c *Client) SshSession() ssh.Session {
+	return nil
+}
+
 func (c *Client) Close() (err error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()

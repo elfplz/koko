@@ -1,11 +1,14 @@
 package srvconn
 
 import (
+	"errors"
 	"io"
 	"sync"
 	"time"
 
 	gossh "golang.org/x/crypto/ssh"
+
+	"github.com/gliderlabs/ssh"
 
 	"github.com/jumpserver/koko/pkg/logger"
 	"github.com/jumpserver/koko/pkg/model"
@@ -35,12 +38,21 @@ func (sc *ServerSSHConnection) Protocol() string {
 	return "ssh"
 }
 
-func (sc *ServerSSHConnection) invokeShell(h, w int, term string) (err error) {
+func (sc *ServerSSHConnection) invokeShell(clientSess ssh.Session, h, w int, term string) (err error) {
 	sess, err := sc.client.NewSession()
 	if err != nil {
 		return
 	}
 	sc.session = sess
+
+	// 处理 x11 请求，需要在 pty-req, shell 请求之前做
+	if clientSess != nil {
+		err := sc.HandleX11Proxy(clientSess)
+		if err != nil {
+			logger.Errorf("handle x11 failed, err: %s", err)
+		}
+	}
+
 	modes := gossh.TerminalModes{
 		gossh.ECHO:          1,     // enable echoing
 		gossh.TTY_OP_ISPEED: 14400, // input speed = 14.4 kbaud
@@ -62,7 +74,7 @@ func (sc *ServerSSHConnection) invokeShell(h, w int, term string) (err error) {
 	return err
 }
 
-func (sc *ServerSSHConnection) Connect(h, w int, term string) (err error) {
+func (sc *ServerSSHConnection) Connect(clientSess ssh.Session, h, w int, term string) (err error) {
 	if sc.client == nil {
 		sc.client, err = NewClient(sc.User, sc.Asset, sc.SystemUser, sc.Timeout(), sc.ReuseConnection)
 		if err != nil {
@@ -70,7 +82,7 @@ func (sc *ServerSSHConnection) Connect(h, w int, term string) (err error) {
 			return
 		}
 	}
-	err = sc.invokeShell(h, w, term)
+	err = sc.invokeShell(clientSess, h, w, term)
 	if err != nil {
 		logger.Errorf("SSH client %p start ssh shell session err %s", sc.client, err)
 		RecycleClient(sc.client)
@@ -78,6 +90,51 @@ func (sc *ServerSSHConnection) Connect(h, w int, term string) (err error) {
 	}
 	logger.Infof("SSH client %p start ssh shell session success", sc.client)
 	return
+}
+
+func (sc *ServerSSHConnection) HandleX11Proxy(clientSess ssh.Session) (err error) {
+	if clientSess.X11ReqPayload() == nil {
+		return nil
+	}
+	sess := sc.session
+	// 请求远端开启 X11 转发
+	logger.Infof("Payload: ", clientSess.X11ReqPayload())
+	ok, err := sess.SendRequest("x11-req", true, clientSess.X11ReqPayload())
+	if err == nil && !ok {
+		err = errors.New("ssh: x11-req failed")
+	}
+
+	if err == nil {
+		// 处理转发
+		x11channels := sc.client.client.HandleChannelOpen("x11")
+		go func() {
+			for ch := range x11channels {
+				remoteCh, _, err := ch.Accept()
+				remotePayload := ch.ExtraData()
+				if err != nil {
+					continue
+				}
+				// 对应开一个 channel 到用户
+				clientConn := clientSess.Context().Value(ssh.ContextKeyConn).(*gossh.ServerConn)
+				clientCh, _, err := clientConn.OpenChannel("x11", remotePayload)
+				if err != nil {
+					continue
+				}
+				go func() {
+					defer clientCh.Close()
+					defer remoteCh.Close()
+					io.Copy(clientCh, remoteCh)
+				}()
+				go func() {
+					defer clientCh.Close()
+					defer remoteCh.Close()
+					io.Copy(remoteCh, clientCh)
+				}()
+			}
+		}()
+	}
+
+	return err
 }
 
 func (sc *ServerSSHConnection) SetWinSize(h, w int) error {

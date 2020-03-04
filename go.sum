@@ -24,6 +24,12 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/elastic/go-elasticsearch/v6 v6.8.5 h1:U2HtkBseC1FNBmDr0TR2tKltL6FxoY+niDAlj5M8TK8=
 github.com/elastic/go-elasticsearch/v6 v6.8.5/go.mod h1:UwaDJsD3rWLM5rKNFzv9hgox93HoX8utj1kxD9aFUcI=
+github.com/elfplz/ssh v0.1.6 h1:EqHgTNbKg9mIyyLgZy+qQz+DY+hRvOvfPGpM7O6c4cc=
+github.com/elfplz/ssh v0.1.6/go.mod h1:4Dr5pGE9SXGu7S5cbir1fiDK/v1eqjkXE1H5oNqoBjI=
+github.com/elfplz/ssh v0.1.7-0.20200229025642-8ca35ada636b h1:gEuQ9fXEX2wydfWFvImRX7kAaTm2L+YWG2tsTWcBxUI=
+github.com/elfplz/ssh v0.1.7-0.20200229025642-8ca35ada636b/go.mod h1:4Dr5pGE9SXGu7S5cbir1fiDK/v1eqjkXE1H5oNqoBjI=
+github.com/elfplz/ssh v0.1.7-0.20200304062033-202b91a89ab7 h1:AfOe7HXG7n6EkUUA/p276kMDKgWl4pXIbLdvcG+LzdQ=
+github.com/elfplz/ssh v0.1.7-0.20200304062033-202b91a89ab7/go.mod h1:4Dr5pGE9SXGu7S5cbir1fiDK/v1eqjkXE1H5oNqoBjI=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 h1:BHsljHzVlRcyQhjrss6TZTdY2VfCqZPbv5k3iBFa2ZQ=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=
 github.com/go-playground/form v3.1.4+incompatible h1:lvKiHVxE2WvzDIoyMnWcjyiBxKt2+uFJyZcPYWsLnjI=

@@ -34,6 +34,7 @@ func StartServer() {
 		NextAuthMethodsHandler:     auth.MFAAuthMethods,
 		HostSigners:                []ssh.Signer{signer},
 		Handler:                    handler.SessionHandler,
+		X11RequestHandler:          handler.X11RequestHandler,
 		SubsystemHandlers:          map[string]ssh.SubsystemHandler{},
 	}
 	// Set sftp handler

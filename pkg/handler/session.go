@@ -17,7 +17,19 @@ import (
 	"github.com/jumpserver/koko/pkg/proxy"
 	"github.com/jumpserver/koko/pkg/service"
 	"github.com/jumpserver/koko/pkg/utils"
+
+	gossh "golang.org/x/crypto/ssh"
 )
+
+func X11RequestHandler(sess ssh.Session, req *gossh.Request) {
+	user, ok := sess.Context().Value(model.ContextKeyUser).(*model.User)
+	if !ok || user.ID == "" {
+		req.Reply(false, nil)
+		return
+	}
+	logger.Info("X11 forwaring for user: ", user.ID)
+	req.Reply(true, nil)
+}
 
 func SessionHandler(sess ssh.Session) {
 	user, ok := sess.Context().Value(model.ContextKeyUser).(*model.User)

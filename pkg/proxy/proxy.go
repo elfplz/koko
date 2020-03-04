@@ -108,7 +108,8 @@ func (p *ProxyServer) getSSHConn() (srvConn *srvconn.ServerSSHConnection, err er
 		CloseOnce:       new(sync.Once),
 	}
 	srvConn.SetSSHClient(p.cacheSSHClient)
-	err = srvConn.Connect(pty.Window.Height, pty.Window.Width, pty.Term)
+	err = srvConn.Connect(p.UserConn.SshSession(), pty.Window.Height, pty.Window.Width, pty.Term)
+
 	return
 }
 
