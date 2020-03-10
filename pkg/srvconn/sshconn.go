@@ -115,7 +115,7 @@ func (sc *ServerSSHConnection) HandleX11Proxy(clientSess ssh.Session) (err error
 				}
 				// 对应开一个 channel 到用户
 				clientConn := clientSess.Context().Value(ssh.ContextKeyConn).(*gossh.ServerConn)
-				clientCh, _, err := clientConn.OpenChannel("x11", remotePayload)
+				clientCh, clientReqCh, err := clientConn.OpenChannel("x11", remotePayload)
 				if err != nil {
 					continue
 				}
@@ -128,6 +128,14 @@ func (sc *ServerSSHConnection) HandleX11Proxy(clientSess ssh.Session) (err error
 					defer clientCh.Close()
 					defer remoteCh.Close()
 					io.Copy(remoteCh, clientCh)
+				}()
+				go func() {
+					// PuTTY 会发送 Type 为 winadj@putty.projects.tartarus.org 请求来测算 window size
+					// https://tartarus.org/~simon/putty-snapshots/htmldoc/Chapter4.html#config-ssh-bug-winadj
+					// 对于这种请求，需要返回不认识
+					for clientReq := range clientReqCh {
+						clientReq.Reply(false, nil)
+					}
 				}()
 			}
 		}()
